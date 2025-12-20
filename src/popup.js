@@ -29,6 +29,9 @@ class PopupApp {
 
       // Load saved data
       await this.loadData();
+      
+      // Initialize auto-fill toggle
+      this.initAutoFillToggle();
     } catch (error) {
       console.error('Error initializing app:', error);
     }
@@ -44,6 +47,34 @@ class PopupApp {
     } catch (error) {
       console.error('Error loading data:', error);
     }
+  }
+
+  /**
+   * Initialize auto-fill toggle
+   */
+  initAutoFillToggle() {
+    const toggle = document.getElementById('autoFillToggle');
+    if (!toggle) return;
+    
+    // Load saved preference
+    chrome.storage.local.get(['autoFillEnabled'], (result) => {
+      toggle.checked = result.autoFillEnabled || false;
+    });
+    
+    // Save preference when changed
+    toggle.addEventListener('change', () => {
+      const isEnabled = toggle.checked;
+      chrome.storage.local.set({ autoFillEnabled: isEnabled }, () => {
+        const status = document.getElementById('status');
+        status.textContent = isEnabled ? '✓ Auto-fill enabled' : 'Auto-fill disabled';
+        status.className = isEnabled ? 'status success' : 'status';
+        
+        setTimeout(() => {
+          status.textContent = '';
+          status.className = 'status';
+        }, 2000);
+      });
+    });
   }
 }
 
