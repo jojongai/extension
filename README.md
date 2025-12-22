@@ -15,6 +15,7 @@ A powerful Chrome extension that automatically fills forms with your personal in
 - ⌨️ **Keyboard Shortcut** - Quick fill with `Ctrl+Shift+F` (or `Cmd+Shift+F` on Mac)
 - 🖱️ **Right-Click Menu** - Context menu option for easy access
 - 💾 **No Database Required** - Everything stored locally, no backend needed
+- ✅ **Response Modals** - Beautiful animated feedback when saving data
 
 ## 📦 Installation
 
@@ -58,6 +59,9 @@ A powerful Chrome extension that automatically fills forms with your personal in
    - **Address**: Street address, city, state, ZIP, country
    - **Credentials**: Username, default password
 3. **Click "💾 Save Data"** to store your information
+   - ✅ **Success Modal**: A green checkmark appears when data is saved successfully
+   - ❌ **Error Modal**: A red X appears if there's an issue (e.g., invalid email)
+   - The success modal auto-closes after 3 seconds
 
 ### Filling Forms
 
@@ -110,15 +114,17 @@ The extension intelligently handles `<select>` dropdowns:
 extension/
 ├── manifest.json          # Extension configuration
 ├── popup.html            # Extension popup interface
-├── popup.css             # Popup styling
-├── popup.js              # Popup logic and data management
+├── popup.css             # Popup styling (includes modal styles)
+├── popup.js              # Popup logic, data management & modal system
 ├── content.js            # Content script (form detection & filling)
 ├── background.js         # Background service worker
 ├── icons/                # Extension icons
 │   ├── icon16.png
 │   ├── icon48.png
 │   └── icon128.png
-└── README.md            # This file
+├── test-form.html       # Test form for development
+├── README.md            # Main documentation
+└── MODAL_FEATURE.md     # Modal feature documentation
 ```
 
 ## 🔒 Security & Privacy

@@ -98,8 +98,18 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     password: document.getElementById('password').value
   };
   
+  // Basic validation
+  if (autofillData.email && !isValidEmail(autofillData.email)) {
+    showModal('error', 'Invalid Email', 'Please enter a valid email address.');
+    return;
+  }
+  
   chrome.storage.local.set({ autofillData }, () => {
-    showStatus('✅ Data saved successfully!', 'success');
+    if (chrome.runtime.lastError) {
+      showModal('error', 'Save Failed', 'Could not save data. Please try again.');
+    } else {
+      showModal('success', 'Data Saved!', 'Your information has been saved successfully.');
+    }
   });
 });
 
@@ -143,5 +153,78 @@ function showStatus(message, type) {
     statusDiv.textContent = '';
     statusDiv.className = 'status';
   }, 3000);
+}
+
+// Email validation helper
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Show modal for save success/failure
+function showModal(type, title, message) {
+  // Remove existing modal if any
+  const existingModal = document.getElementById('responseModal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
+  // Create modal
+  const modal = document.createElement('div');
+  modal.id = 'responseModal';
+  modal.className = 'modal-overlay';
+  
+  const iconSvg = type === 'success' 
+    ? `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <circle cx="12" cy="12" r="10" stroke="#10b981"></circle>
+         <path d="M9 12l2 2 4-4" stroke="#10b981"></path>
+       </svg>`
+    : `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <circle cx="12" cy="12" r="10" stroke="#ef4444"></circle>
+         <line x1="15" y1="9" x2="9" y2="15" stroke="#ef4444"></line>
+         <line x1="9" y1="9" x2="15" y2="15" stroke="#ef4444"></line>
+       </svg>`;
+  
+  modal.innerHTML = `
+    <div class="modal-content ${type}">
+      <div class="modal-icon ${type}">
+        ${iconSvg}
+      </div>
+      <h2 class="modal-title">${title}</h2>
+      <p class="modal-message">${message}</p>
+      <button class="modal-btn ${type}" id="modalCloseBtn">OK</button>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Animate in
+  setTimeout(() => modal.classList.add('active'), 10);
+  
+  // Close modal on button click
+  document.getElementById('modalCloseBtn').addEventListener('click', () => {
+    closeModal();
+  });
+  
+  // Close modal on overlay click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  
+  // Auto-close after 3 seconds for success
+  if (type === 'success') {
+    setTimeout(() => closeModal(), 3000);
+  }
+}
+
+// Close modal with animation
+function closeModal() {
+  const modal = document.getElementById('responseModal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => modal.remove(), 300);
+  }
 }
 
